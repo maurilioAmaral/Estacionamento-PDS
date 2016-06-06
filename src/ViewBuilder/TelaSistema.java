@@ -23,26 +23,31 @@ import ConexaoBancoDados.ConexaoBD;
 import Controles.ControleCarro;
 import Controles.ControleDataeHora;
 
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
+import javax.swing.JFormattedTextField;
 
 
 
 public class TelaSistema extends JFrame {
+	
 	ConexaoBD conexao = new ConexaoBD();
 	ControleCarro carroControl = new ControleCarro();
 	ControleDataeHora dataHora = new ControleDataeHora();
-	ControleCarro carro = new ControleCarro();
+	
+	
+	
 	DefaultTableModel model;
 	private JPanel contentPane;
 	private JTextField textFieldModelo;
-	private JTextField textFieldPlaca;
-	private JTextField textFieldHora;
 	private JTextField textFieldData;
 	private JTextField textFieldBusca;
 	private JTextField textFieldPropietario;
-	
 	private JTable table;
+	private JTextField textFieldHora;
+	private JFormattedTextField JformattedPlaca ;
 
 	public TelaSistema() {
 		setTitle("Estacionamento");
@@ -74,20 +79,10 @@ public class TelaSistema extends JFrame {
 		lblPlaca.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(lblPlaca);
 		
-		textFieldPlaca = new JTextField();
-		textFieldPlaca.setBounds(251, 83, 114, 19);
-		contentPane.add(textFieldPlaca);
-		textFieldPlaca.setColumns(10);
-		
 		JLabel lblHora = new JLabel("Hora");
 		lblHora.setBounds(12, 126, 70, 15);
 		lblHora.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(lblHora);
-		
-		textFieldHora = new JTextField();
-		textFieldHora.setBounds(78, 124, 117, 19);
-		contentPane.add(textFieldHora);
-		textFieldHora.setColumns(10);
 		
 		JLabel lblData = new JLabel("Data");
 		lblData.setBounds(201, 126, 70, 15);
@@ -175,33 +170,63 @@ public class TelaSistema extends JFrame {
 		
 		
 		scrollPane.setViewportView(table);
+		 MaskFormatter mascaraPlaca = null;
+		 
+		try {
+			mascaraPlaca = new MaskFormatter("UUU-####");
+			
+		} catch (Exception e) {
+			
+		}
+		
+		JformattedPlaca = new JFormattedTextField(mascaraPlaca);
+		JformattedPlaca.setBounds(255, 85, 110, 19);
+		contentPane.add(JformattedPlaca);
+		
+		textFieldHora = new JTextField();
+		textFieldHora.setBounds(78, 124, 114, 19);
+		contentPane.add(textFieldHora);
+		textFieldHora.setColumns(10);
 		
 		
 		btnCadastrar.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == btnCadastrar){
-					String modelo = textFieldModelo.getText();
-					String placa  = textFieldPlaca.getText();
-					textFieldHora.setText(dataHora.getHoraEntrada());
-					textFieldData.setText(dataHora.getDataEntrada());
-					String propietario = textFieldPropietario.getText();
-					carroControl.InserirDadosCarro(modelo, placa, dataHora, propietario);
-					textFieldModelo.setText("");					
-					textFieldPlaca.setText("");	
-					textFieldHora.setText("");
-					textFieldData.setText("");
-					textFieldPropietario.setText("");
-					listar();
+				if (e.getSource() == btnCadastrar){				
+					if(textFieldModelo.getText().length()==0 || JformattedPlaca.getText().equals("   -    ") || textFieldPropietario.getText().length()==0){
+						JOptionPane.showMessageDialog(null, "Preencha todos os campos");
+							
+						}else{
+
+							String modelo = textFieldModelo.getText();
+							String placa  = JformattedPlaca.getText();
+							textFieldHora.setText(dataHora.getHoraEntrada());
+							textFieldData.setText(dataHora.getDataEntrada());
+							String propietario = textFieldPropietario.getText();
+							carroControl.InserirDadosCarro(modelo, placa, dataHora, propietario);
+							textFieldModelo.setText("");					
+							JformattedPlaca.setText("");	
+							textFieldHora.setText("");
+							textFieldData.setText("");
+							textFieldPropietario.setText("");
+							listar();
+							
+							
+							
+						}
+					
 				}
 				
 			}
+
+			
+
+			
 		});
 		btnListar.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == btnListar){
-
 				listar();
 				
 				
@@ -213,7 +238,7 @@ public class TelaSistema extends JFrame {
 			
 			public void actionPerformed(ActionEvent e) {
 				textFieldModelo.setText("");					
-				textFieldPlaca.setText("");	
+				JformattedPlaca.setText("");	
 				textFieldHora.setText("");
 				textFieldData.setText("");
 				textFieldPropietario.setText("");
@@ -226,7 +251,8 @@ public class TelaSistema extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == btnExcluir){
 					String placa = JOptionPane.showInputDialog(null,"Digite a placa do  veiculo");
-					carro.DeletarVeiculo(placa);
+					carroControl.DeletarVeiculo(placa);
+					listar();
 				}
 				
 			}
@@ -234,7 +260,7 @@ public class TelaSistema extends JFrame {
 		btnBuscar.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				pesquisar();
+			pesquisar();
 				
 				
 			}
@@ -254,6 +280,8 @@ public class TelaSistema extends JFrame {
 		
 		
 	}
+	////////////////////////////////////////////////////////////////////////////
+	
 	
 	public void pesquisar(){
 		
@@ -270,7 +298,7 @@ public class TelaSistema extends JFrame {
 			rs=pst.executeQuery();
 			
 			if(rs.next()){
-				textFieldPlaca.setText(rs.getString("placa"));				
+				JformattedPlaca.setText(rs.getString("placa"));				
 				textFieldModelo.setText(rs.getString("modelo"));
 				textFieldHora.setText(rs.getString("horaEntrada"));
 				textFieldData.setText(rs.getString("dataEntrada"));
@@ -324,9 +352,5 @@ public class TelaSistema extends JFrame {
 		}
 		
 	}
+	
 }
-
-
-
-
-
