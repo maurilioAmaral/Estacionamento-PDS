@@ -1,4 +1,7 @@
 package ViewBuilder;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -36,6 +39,7 @@ public class TelaSistema extends JFrame {
 	ConexaoBD conexao = new ConexaoBD();
 	ControleCarro carroControl = new ControleCarro();
 	ControleDataeHora dataHora = new ControleDataeHora();
+	Relatorio relatorio = new Relatorio();
 	
 	
 	
@@ -43,11 +47,12 @@ public class TelaSistema extends JFrame {
 	private JPanel contentPane;
 	private JTextField textFieldModelo;
 	private JTextField textFieldData;
-	private JTextField textFieldBusca;
 	private JTextField textFieldPropietario;
 	private JTable table;
 	private JTextField textFieldHora;
 	private JFormattedTextField JformattedPlaca ;
+	private JFormattedTextField formattedBuscaPlaca;
+	private JButton btnRelatrio;
 
 	public TelaSistema() {
 		setTitle("Estacionamento");
@@ -89,7 +94,7 @@ public class TelaSistema extends JFrame {
 		lblData.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(lblData);
 		
-		textFieldData = new JTextField();
+		textFieldData = new JTextField("Não obrigatório");
 		textFieldData.setBounds(251, 124, 114, 19);
 		contentPane.add(textFieldData);
 		textFieldData.setColumns(10);
@@ -116,11 +121,12 @@ public class TelaSistema extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 			}
+			
 		});
 		contentPane.add(btnListar);
 		
 		JButton btnBuscar = new JButton("Buscar");
-		btnBuscar.setBounds(439, 210, 80, 20);
+		btnBuscar.setBounds(234, 210, 80, 20);
 		btnBuscar.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(btnBuscar);
 		
@@ -137,11 +143,6 @@ public class TelaSistema extends JFrame {
 		lblDigiteAPlaca.setBounds(22, 210, 107, 15);
 		lblDigiteAPlaca.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(lblDigiteAPlaca);
-		
-		textFieldBusca = new JTextField();
-		textFieldBusca.setBounds(129, 208, 276, 19);
-		contentPane.add(textFieldBusca);
-		textFieldBusca.setColumns(10);
 		
 		JLabel lblPropietrio = new JLabel("Propietário");
 		lblPropietrio.setBounds(12, 39, 99, 15);
@@ -183,10 +184,19 @@ public class TelaSistema extends JFrame {
 		JformattedPlaca.setBounds(255, 85, 110, 19);
 		contentPane.add(JformattedPlaca);
 		
-		textFieldHora = new JTextField();
+		textFieldHora = new JTextField("Não obrigatório");
 		textFieldHora.setBounds(78, 124, 114, 19);
 		contentPane.add(textFieldHora);
 		textFieldHora.setColumns(10);
+		
+		 formattedBuscaPlaca = new JFormattedTextField(mascaraPlaca);
+		formattedBuscaPlaca.setBounds(126, 211, 84, 19);
+		contentPane.add(formattedBuscaPlaca);
+		
+		 btnRelatrio = new JButton("Relatório");
+		btnRelatrio.setFont(new Font("Dialog", Font.PLAIN, 12));
+		btnRelatrio.setBounds(463, 413, 90, 19);
+		contentPane.add(btnRelatrio);
 		
 		
 		btnCadastrar.addActionListener(new ActionListener() {
@@ -194,7 +204,7 @@ public class TelaSistema extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == btnCadastrar){				
 					if(textFieldModelo.getText().length()==0 || JformattedPlaca.getText().equals("   -    ") || textFieldPropietario.getText().length()==0){
-						JOptionPane.showMessageDialog(null, "Preencha todos os campos");
+						JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
 							
 						}else{
 
@@ -242,7 +252,7 @@ public class TelaSistema extends JFrame {
 				textFieldHora.setText("");
 				textFieldData.setText("");
 				textFieldPropietario.setText("");
-				textFieldBusca.setText("");
+				formattedBuscaPlaca.setText("");
 				
 			}
 		});
@@ -277,6 +287,15 @@ public class TelaSistema extends JFrame {
 				
 			}
 		});
+		btnRelatrio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() == btnRelatrio);
+				relatorio.setVisible(true);
+				relatorio.GerarRelatorio();
+			}
+		});
 		
 		
 	}
@@ -294,7 +313,7 @@ public class TelaSistema extends JFrame {
 		try {
 			String sql = "select * from veiculo where placa=?";
 			pst = conectado.connect.prepareStatement(sql);
-			pst.setString(1,textFieldBusca.getText());
+			pst.setString(1,formattedBuscaPlaca.getText());
 			rs=pst.executeQuery();
 			
 			if(rs.next()){
@@ -310,7 +329,7 @@ public class TelaSistema extends JFrame {
 			else{
 				
 				JOptionPane.showMessageDialog(null, "veículo não cadastrado ou placa incorreta");
-				textFieldBusca.setText("");
+				formattedBuscaPlaca.setText("");
 				
 				
 			}
@@ -337,6 +356,7 @@ public class TelaSistema extends JFrame {
 			 pst=conectado.connect.prepareStatement(sql);
 			 rs=pst.executeQuery(sql);
 			 model.setNumRows(0);
+			
 			 while(rs.next()){
 				
 				 
@@ -352,5 +372,18 @@ public class TelaSistema extends JFrame {
 		}
 		
 	}
-	
+	public void gerarTxt(){
+		
+		String textoQueSeraEscrito = "Texto";
+		FileWriter arquivo;
+		try {
+			arquivo = new FileWriter(new File("Arquivo.txt"));
+			arquivo.write(textoQueSeraEscrito);
+			arquivo.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
