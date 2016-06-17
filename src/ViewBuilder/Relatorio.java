@@ -1,4 +1,11 @@
 package ViewBuilder;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -19,6 +26,7 @@ import com.mysql.jdbc.ResultSet;
 
 import ConexaoBancoDados.ConexaoBD;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
@@ -30,6 +38,7 @@ import java.awt.event.ActionListener;
 public class Relatorio extends JFrame {
 	ConexaoBD conexao = new ConexaoBD();
 	JTextArea textArea;
+	
 	
 
 	private JPanel contentPane;
@@ -57,6 +66,7 @@ public class Relatorio extends JFrame {
 		textArea.setBounds(15, 32, 771, 225);
 		contentPane.add(textArea);
 		textArea.setLineWrap(true);
+		textArea.setEditable(false);
 		
 		 btnSair = new JButton("Sair");
 		btnSair.setFont(new Font("Dialog", Font.PLAIN, 12));
@@ -88,7 +98,7 @@ public class Relatorio extends JFrame {
 			 String sql = "select * from veiculo ";
 			 pst=conectado.connect.prepareStatement(sql);			 
 			 rs= (ResultSet) pst.executeQuery(sql);
-//			 rs.next();
+
 			 
 			 while(rs.next()){
 				 
@@ -117,4 +127,61 @@ public class Relatorio extends JFrame {
 	
 	
 	}
-}
+	public void gerarRelatorioPDF(){
+		ConexaoBD conectado = new ConexaoBD();
+		 conectado.conectar();
+		 Connection connect=null;
+		 PreparedStatement pst = null;
+		 ResultSet rs=null;
+		 Document doc = new Document();
+	     
+	     
+         try {
+        	 PdfWriter.getInstance(doc, new FileOutputStream("/home/maurilio/Documentos//documento.pdf"));
+             doc.open();
+        	 try {
+    			 String sql = "select * from veiculo ";
+    			 pst=conectado.connect.prepareStatement(sql);			 
+    			 rs= (ResultSet) pst.executeQuery(sql);
+
+    			 
+    			 while(rs.next()){
+//    				
+    				 doc.add(new Paragraph("ID " +rs.getString("id" ) +" PROPIETARIO " +rs.getString("propietario" ) +" MODELO " +rs.getString("modelo" ) +" PLACA " +rs.getString("placa" ) +" HORA DE ENTRADA " +rs.getString("horaEntrada" ) +" DATA DE ENTRADA " +rs.getString("dataEntrada" )));
+//    				 
+    				 
+
+    				
+    				 
+    			 }
+    			 JOptionPane.showMessageDialog(null, "Relatorio gerado com sucesso",null,JOptionPane.INFORMATION_MESSAGE);
+    			 		 
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			
+    		}
+            
+             
+            
+             
+             
+         			}
+         catch(DocumentException de) {
+             System.err.println(de.getMessage());
+         }
+         catch(IOException ioe) {
+             System.err.println(ioe.getMessage());
+         }
+         doc.close();
+		
+		
+	
+	
+		
+	}
+	
+	}
+	
+
+
+
