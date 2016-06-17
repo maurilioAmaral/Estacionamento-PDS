@@ -92,7 +92,7 @@ public class TelaSistemaCentral extends JFrame implements ActionListener{
 			
 			public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == listagemCarro){
-				carro.listar();
+//				carro.listar();
 				
 				
 			}
