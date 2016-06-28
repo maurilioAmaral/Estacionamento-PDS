@@ -5,4 +5,4 @@
  
   
   A classe 'main' é a loginFuncionarioBuilder a partir dela se pode logar com um login e senha ambos "admin" que já estão no aquivo sql de funcionáio, nessa tela voçê poderá logar ou então se cadastrar para isso é necessário preencher todos os campos da tebela e logo após confirmar com o login e senha padrão que já estará salvo.
-  Então abrirá a tela principal onde é posível cadastrar, pesquisar, editar e remover. No botão editar\exculir é necessário pesquisar antes através do id que pode ser visto na tabela da tela pincipal após pesquisar aquele veículo poderá ter dados alterados ou ser removido.
+  Então abrirá a tela principal onde é posível cadastrar, pesquisar, editar e remover. No botão editar\exculir é necessário pesquisar antes através do id "precionando ENTER" que pode ser visto na tabela da tela pincipal após pesquisar aquele veículo poderá ter dados alterados ou ser removido.
