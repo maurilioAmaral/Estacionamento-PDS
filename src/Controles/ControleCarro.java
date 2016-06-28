@@ -2,29 +2,29 @@ package Controles;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
-import View.TelaBuscaVeiculos;
-import View.TelaSistemaCentral;
+import com.mysql.jdbc.ResultSet;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-
+import ViewBuilder.Relatorio;
+import ViewBuilder.TelaExcluir;
+import ViewBuilder.TelaSistema;
 import ConexaoBancoDados.ConexaoBD;
 	
 	
 	public class ControleCarro {
-		ControleDataeHora dataHora = new ControleDataeHora();		
-		public void InserirDadosCarro(String modelo,String placa,ControleDataeHora dataHora){
+		ControleDataeHora dataHora = new ControleDataeHora();
+	
+		public void InserirDadosCarro(String modelo,String placa,ControleDataeHora dataHora,String propietario,String tempo ){
 			
 			ConexaoBD conectado = new ConexaoBD();
 			conectado.conectar();
 			try{
 				Connection conn = (Connection) conectado.conectar();
 				Statement state = (Statement) conn.createStatement();
-				String mySql = "INSERT INTO estacionamento.veiculo (modelo, placa,horaEntrada,dataEntrada) VALUES ('"+modelo+"','"+placa+"','"+dataHora.getHoraEntrada()+"','"+dataHora.getDataEntrada()+"')";
+				String mySql = "INSERT INTO estacionamento.veiculo (modelo, placa,horaEntrada,dataEntrada,propietario,tempo) VALUES ('"+modelo+"','"+placa+"','"+dataHora.getHoraEntrada()+"','"+dataHora.getDataEntrada()+"','"+propietario+"','"+tempo+"')";
 				System.out.println(mySql);
 				boolean res = state.execute(mySql);
 				JOptionPane.showMessageDialog(null,(!res)?"Veículo inserido com sucesso!!!":"");
@@ -37,49 +37,66 @@ import ConexaoBancoDados.ConexaoBD;
 			}
 			
 		}
-		public String  DeletarVeiculo(String placa){
+		public int  DeletarVeiculo(String placa){
 			ConexaoBD conectado = new ConexaoBD();
-			conectado.conectar();
+				conectado.conectar();
 			try{
 			Connection conn = (Connection) conectado.conectar();
 			Statement state = (Statement) conn.createStatement();
 			String mySql = "DELETE FROM estacionamento.veiculo WHERE placa = '"+placa+"';";
-			boolean res = state.execute(mySql);
-			JOptionPane.showMessageDialog(null,(!res)?"Veículo removido com sucesso!!!":"");
+			int res = state.executeUpdate(mySql);	
+					if(res>0){
+								
+						JOptionPane.showMessageDialog(null,"Veículo removido com sucesso!!!");
+					}else{
+						JOptionPane.showMessageDialog(null,"Veículo não cadastrado!!!");
+					}
 			state.close();
 			conectado.fecharBancoDados();
-			
 		}catch(Exception e){
 			JOptionPane.showMessageDialog(null,e.getMessage());				
 			conectado.fecharBancoDados();
 		}
-			return placa;
+			return (Integer) null;
 	}
-		public void listar(){
+		
+		public String Editar(int id,String modelo,String placa,ControleDataeHora dataHora,String propietario,String tempo){
+
 			ConexaoBD conectado = new ConexaoBD();
 			conectado.conectar();
-			 Connection connect=null;
-			 PreparedStatement pst = null;
-			 ResultSet rs=null;
-			 try {
-				 String sql="select * from veiculo ";
-				 pst=conectado.connect.prepareStatement(sql);
-				 rs=pst.executeQuery(sql);
-				 while(rs.next()){
-					 
-					 System.out.println("MODELO: "+rs.getString("modelo")+" PLACA: "+rs.getString("placa")+" HORA DE ENTRADA :"+rs.getString("horaEntrada")+" DATA DA ENTRADA: "+rs.getString("dataEntrada"));
-					 
-					 
-				 }
-				 
-				 
-			 
-			} catch (Exception e) {
-				e.printStackTrace();
+			String mySql;
+			try{
+
+				mySql = "UPDATE veiculo set modelo = '"+modelo+"', placa = '"+placa+"', horaEntrada = '"+dataHora.getHoraEntrada()+"',dataEntrada ='"+dataHora.getDataEntrada()+"',propietario = '"+propietario+"', tempo = '"+tempo+"' where id = '"+id+"'";
+				Connection conn =  conectado.conectar();
+				Statement state =  conn.createStatement();
+				int res = state.executeUpdate(mySql);	
+				if(res>0){
+							
+					JOptionPane.showMessageDialog(null,"Dados atualizados com sucesso!!!");
+					
+				}else{
+					JOptionPane.showMessageDialog(null,"Os dados não poderam ser atualizados devido a um erro interno!!!");
+					System.out.println(id);
+				}
+				
+				state.close();
+				conectado.fecharBancoDados();
+			}catch(Exception e){
+				e.getStackTrace();
+				
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
+				System.out.println(id);
+				conectado.fecharBancoDados();
 				
 			}
+			return modelo;
+			
 			
 		}
+	
+
 	
 }
 	
