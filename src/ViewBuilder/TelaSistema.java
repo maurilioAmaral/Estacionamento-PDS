@@ -31,6 +31,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import javax.swing.JFormattedTextField;
+import javax.swing.UIManager;
 
 
 
@@ -40,9 +41,6 @@ public class TelaSistema extends JFrame {
 	ControleCarro carroControl = new ControleCarro();
 	ControleDataeHora dataHora = new ControleDataeHora();
 	Relatorio relatorio = new Relatorio();
-	
-	
-	
 	DefaultTableModel model;
 	private JPanel contentPane;
 	private JTextField textFieldModelo;
@@ -53,16 +51,21 @@ public class TelaSistema extends JFrame {
 	private JFormattedTextField JformattedPlaca ;
 	private JFormattedTextField formattedBuscaPlaca;
 	private JButton btnRelatrio;
+	private MaskFormatter mascaraPlaca;
+	private JFormattedTextField formattedTextFieldTempo;
+	private String placa;
+	private JButton btnListar;
 
 	public TelaSistema() {
+		
 		setTitle("Estacionamento");
-		setBackground(new Color(255, 255, 255));
+		setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 637, 470);
 		contentPane = new JPanel();
 		contentPane.setToolTipText("");
 		contentPane.setForeground(new Color(100, 149, 237));
-		contentPane.setBackground(new Color(100, 149, 237));
+		contentPane.setBackground(new Color(30, 144, 255));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);
@@ -104,26 +107,15 @@ public class TelaSistema extends JFrame {
 		btnCadastrar.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(btnCadastrar);
 		
-		final JButton btnExcluir = new JButton("Excluir");
-		btnExcluir.setBounds(154, 167, 117, 25);
+		final JButton btnExcluir = new JButton("Excluir/Editar");
+		btnExcluir.setBounds(301, 167, 152, 25);
 		btnExcluir.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnExcluir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) {
 				
 			}
 		});
 		contentPane.add(btnExcluir);
-		
-		final JButton btnListar = new JButton("listar");
-		btnListar.setBounds(295, 167, 117, 25);
-		btnListar.setFont(new Font("Dialog", Font.PLAIN, 12));
-		btnListar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-			
-		});
-		contentPane.add(btnListar);
 		
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.setBounds(234, 210, 80, 20);
@@ -155,7 +147,7 @@ public class TelaSistema extends JFrame {
 		textFieldPropietario.setColumns(10);
 		
 		JButton btnLimpar = new JButton("Limpar");
-		btnLimpar.setBounds(439, 167, 117, 25);
+		btnLimpar.setBounds(155, 167, 117, 25);
 		btnLimpar.setFont(new Font("Dialog", Font.PLAIN, 12));
 		contentPane.add(btnLimpar);
 		
@@ -164,7 +156,7 @@ public class TelaSistema extends JFrame {
 		contentPane.add(scrollPane);
 
 		model = new DefaultTableModel(null,
-			new String[] {"ID", "Modelo", "Placa", "Hora", "Data", "Propietario"});
+			new String[] {"ID", "Modelo", "Placa", "Hora", "Data", "Propietario","tempo"});
 		
 		table = new JTable(model);
 		
@@ -172,16 +164,19 @@ public class TelaSistema extends JFrame {
 		
 		scrollPane.setViewportView(table);
 		 MaskFormatter mascaraPlaca = null;
+		 MaskFormatter mascaraHora = null;
 		 
 		try {
+			
 			mascaraPlaca = new MaskFormatter("UUU-####");
+			mascaraHora = new MaskFormatter("#:##");
 			
 		} catch (Exception e) {
 			
 		}
 		
 		JformattedPlaca = new JFormattedTextField(mascaraPlaca);
-		JformattedPlaca.setBounds(255, 85, 110, 19);
+		JformattedPlaca.setBounds(251, 85, 70, 19);
 		contentPane.add(JformattedPlaca);
 		
 		textFieldHora = new JTextField("Não obrigatório");
@@ -189,21 +184,35 @@ public class TelaSistema extends JFrame {
 		contentPane.add(textFieldHora);
 		textFieldHora.setColumns(10);
 		
-		 formattedBuscaPlaca = new JFormattedTextField(mascaraPlaca);
+		formattedBuscaPlaca = new JFormattedTextField(mascaraPlaca);
 		formattedBuscaPlaca.setBounds(126, 211, 84, 19);
 		contentPane.add(formattedBuscaPlaca);
 		
-		 btnRelatrio = new JButton("Relatório");
+		btnRelatrio = new JButton("Relatório");
 		btnRelatrio.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnRelatrio.setBounds(463, 413, 90, 19);
 		contentPane.add(btnRelatrio);
+		
+		JLabel lblTempo = new JLabel("tempo");
+		lblTempo.setFont(new Font("Dialog", Font.PLAIN, 12));
+		lblTempo.setBounds(339, 89, 70, 15);
+		contentPane.add(lblTempo);
+		
+		formattedTextFieldTempo = new JFormattedTextField(mascaraHora);
+		formattedTextFieldTempo.setBounds(397, 85, 80, 19);
+		contentPane.add(formattedTextFieldTempo);
+		
+		btnListar = new JButton("Listar");
+		btnListar.setFont(new Font("Dialog", Font.PLAIN, 12));
+		btnListar.setBounds(465, 167, 117, 25);
+		contentPane.add(btnListar);
 		
 		
 		btnCadastrar.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == btnCadastrar){				
-					if(textFieldModelo.getText().length()==0 || JformattedPlaca.getText().equals("   -    ") || textFieldPropietario.getText().length()==0){
+					if(textFieldModelo.getText().length()==0 || JformattedPlaca.getText().equals("   -    ") || textFieldPropietario.getText().length()==0||formattedTextFieldTempo.getText().length()==0){
 						JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
 							
 						}else{
@@ -213,12 +222,16 @@ public class TelaSistema extends JFrame {
 							textFieldHora.setText(dataHora.getHoraEntrada());
 							textFieldData.setText(dataHora.getDataEntrada());
 							String propietario = textFieldPropietario.getText();
-							carroControl.InserirDadosCarro(modelo, placa, dataHora, propietario);
+							String tempo =  formattedTextFieldTempo.getText();
+							carroControl.InserirDadosCarro(modelo, placa,dataHora, propietario, tempo);
 							textFieldModelo.setText("");					
-							JformattedPlaca.setText("");	
+							JformattedPlaca.setText("");
+							formattedTextFieldTempo.setText(null);
 							textFieldHora.setText("");
 							textFieldData.setText("");
 							textFieldPropietario.setText("");
+							JformattedPlaca.setText(null);
+							
 							listar();
 							
 							
@@ -233,26 +246,17 @@ public class TelaSistema extends JFrame {
 
 			
 		});
-		btnListar.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-			if(e.getSource() == btnListar){
-				listar();
-				
-				
-			}
-				
-			}
-		});
 		btnLimpar.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
 				textFieldModelo.setText("");					
-				JformattedPlaca.setText("");	
 				textFieldHora.setText("");
 				textFieldData.setText("");
 				textFieldPropietario.setText("");
-				formattedBuscaPlaca.setText("");
+				formattedTextFieldTempo.setText(null);
+				JformattedPlaca.setText(null);
+				formattedBuscaPlaca.setText(null);
+
 				
 			}
 		});
@@ -260,8 +264,9 @@ public class TelaSistema extends JFrame {
 			
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == btnExcluir){
-					String placa = JOptionPane.showInputDialog(null,"Digite a placa do  veiculo");
-					carroControl.DeletarVeiculo(placa);
+					 TelaExcluir telaExcluir = new TelaExcluir();
+					 telaExcluir.setVisible(true);
+					
 					listar();
 				}
 				
@@ -270,7 +275,14 @@ public class TelaSistema extends JFrame {
 		btnBuscar.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-			pesquisar();
+				
+				if(formattedBuscaPlaca.getText().equals("   -    ")){
+					JOptionPane.showMessageDialog(null, "Preencha o campo de busca para pesquisar");
+					
+				}else{
+					pesquisar();
+				}
+			
 				
 				
 			}
@@ -287,11 +299,22 @@ public class TelaSistema extends JFrame {
 				
 			}
 		});
+		btnListar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource() ==  btnListar){
+					listar();
+				}
+				
+			}
+		});
 		btnRelatrio.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource() == btnRelatrio);
+				relatorio.gerarRelatorioPDF();
 				relatorio.setVisible(true);
 				relatorio.GerarRelatorio();
 			}
@@ -322,13 +345,13 @@ public class TelaSistema extends JFrame {
 				textFieldHora.setText(rs.getString("horaEntrada"));
 				textFieldData.setText(rs.getString("dataEntrada"));
 				textFieldPropietario.setText(rs.getString("propietario"));
-				
+				formattedTextFieldTempo.setText(rs.getString("tempo"));
 				
 			
 			}
 			else{
 				
-				JOptionPane.showMessageDialog(null, "veículo não cadastrado ou placa incorreta");
+				JOptionPane.showMessageDialog(null, "veículo não encontrado verifique a placa e tente novamente");
 				formattedBuscaPlaca.setText("");
 				
 				
@@ -345,6 +368,7 @@ public class TelaSistema extends JFrame {
 		}
 		
 	}
+
 	public void listar(){
 		 ConexaoBD conectado = new ConexaoBD();
 		 conectado.conectar();
@@ -354,36 +378,95 @@ public class TelaSistema extends JFrame {
 		 try {
 			 String sql="select * from veiculo ";
 			 pst=conectado.connect.prepareStatement(sql);
-			 rs=pst.executeQuery(sql);
+			 rs = pst.executeQuery(sql);
 			 model.setNumRows(0);
 			
-			 while(rs.next()){
 				
-				 
-				 model.addRow(new Object[]{rs.getInt("id"),rs.getString("modelo"),rs.getString("placa"),rs.getString("horaEntrada"),rs.getString("dataEntrada"),rs.getString("propietario")});
-				 
-
-								 
+			 while(rs.next()){
+					
+						 model.addRow(new Object[]{rs.getInt("id"),rs.getString("modelo"),rs.getString("placa"),
+						rs.getString("horaEntrada"),rs.getString("dataEntrada"),rs.getString("propietario"),rs.getString("tempo")});
+						 
+			 
 			 }
+		 }
 			 		 
-		} catch (Exception e) {
+	catch (Exception e) {
 			e.printStackTrace();
 			
 		}
 		
 	}
-	public void gerarTxt(){
-		
-		String textoQueSeraEscrito = "Texto";
-		FileWriter arquivo;
-		try {
-			arquivo = new FileWriter(new File("Arquivo.txt"));
-			arquivo.write(textoQueSeraEscrito);
-			arquivo.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+
+	public String getPlaca() {
+		return placa;
+	}
+
+
+	public void setPlaca(String placa) {
+		this.placa = placa;
+	}
+	
+
+
+	public JTextField getTextFieldModelo() {
+		return textFieldModelo;
+	}
+
+
+	public void setTextFieldModelo(JTextField textFieldModelo) {
+		this.textFieldModelo = textFieldModelo;
+	}
+
+
+	public JTextField getTextFieldData() {
+		return textFieldData;
+	}
+
+
+	public void setTextFieldData(JTextField textFieldData) {
+		this.textFieldData = textFieldData;
+	}
+
+
+	public JTextField getTextFieldPropietario() {
+		return textFieldPropietario;
+	}
+
+
+	public void setTextFieldPropietario(JTextField textFieldPropietario) {
+		this.textFieldPropietario = textFieldPropietario;
+	}
+
+
+	public JTextField getTextFieldHora() {
+		return textFieldHora;
+	}
+
+
+	public void setTextFieldHora(JTextField textFieldHora) {
+		this.textFieldHora = textFieldHora;
+	}
+
+
+	public JFormattedTextField getJformattedPlaca() {
+		return JformattedPlaca;
+	}
+
+
+	public void setJformattedPlaca(JFormattedTextField jformattedPlaca) {
+		JformattedPlaca = jformattedPlaca;
+	}
+
+
+	public JFormattedTextField getFormattedTextFieldTempo() {
+		return formattedTextFieldTempo;
+	}
+
+
+	public void setFormattedTextFieldTempo(
+			JFormattedTextField formattedTextFieldTempo) {
+		this.formattedTextFieldTempo = formattedTextFieldTempo;
 	}
 }
